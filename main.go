@@ -1,8 +1,14 @@
 package main
 
 import (
+	"enlabs-test/app/cache/user"
+	"enlabs-test/app/repo/transaction"
+	user_repo "enlabs-test/app/repo/user"
+	"enlabs-test/server/router"
+	"enlabs-test/store/pg"
 	"flag"
 	"github.com/BurntSushi/toml"
+	"github.com/valyala/fasthttp"
 )
 
 const defaultConfigPath = "config/dev.toml"
@@ -14,6 +20,7 @@ type Config struct {
 		HttpInterface       string `toml:"http"`
 		CancellationTimeout int64  `toml:"cancellationTimeout"`
 	} `toml:"service"`
+	PGConfig *pg.PGConfig `toml:"postgres"`
 }
 
 func init() {
@@ -42,6 +49,36 @@ func run() error {
 	conf := new(Config)
 	_, err := toml.DecodeFile(*configPath, conf)
 	if err != nil {
+		return err
+	}
+
+	pgStore, err := pg.InitPGStore(*conf.PGConfig)
+	if err != nil {
+		return err
+	}
+
+	ur, err := user_repo.NewUserRepo(pgStore)
+	if err != nil {
+		return err
+	}
+
+	userCache, err := user.Cache(ur)
+	if err != nil {
+		return err
+	}
+
+	transactionRepo, err := transaction.NewTransactionRepo(pgStore)
+	if err != nil {
+		return nil
+	}
+
+	r := router.Router(userCache, transactionRepo)
+
+	server := &fasthttp.Server{
+		Handler: r.Handler,
+	}
+
+	if err := server.ListenAndServe(":" + conf.ServiceConfig.HttpInterface); err != nil {
 		return err
 	}
 
