@@ -11,6 +11,7 @@ type UserRepo struct {
 }
 
 type User struct {
+	Id int64
 }
 
 func (ur *UserRepo) User(id int64) (*User, error) {

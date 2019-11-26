@@ -2,6 +2,7 @@ package main
 
 import (
 	"enlabs-test/app/cache/user"
+	finance_manager "enlabs-test/app/finance-manager"
 	"enlabs-test/app/repo/transaction"
 	user_repo "enlabs-test/app/repo/user"
 	"enlabs-test/server/router"
@@ -9,6 +10,7 @@ import (
 	"flag"
 	"github.com/BurntSushi/toml"
 	"github.com/valyala/fasthttp"
+	"time"
 )
 
 const defaultConfigPath = "config/dev.toml"
@@ -72,7 +74,11 @@ func run() error {
 		return nil
 	}
 
-	r := router.Router(userCache, transactionRepo)
+	financeManager := finance_manager.NewFinanceManager(userCache, transactionRepo)
+
+	go financeManager.ScheduleCancellation(time.Duration(conf.ServiceConfig.CancellationTimeout) * time.Minute)
+
+	r := router.Router(userCache, financeManager)
 
 	server := &fasthttp.Server{
 		Handler: r.Handler,
