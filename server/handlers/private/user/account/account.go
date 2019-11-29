@@ -2,9 +2,9 @@ package account
 
 import (
 	"encoding/json"
-	finance_manager "enlabs-test/app/finance-manager"
-	"enlabs-test/app/repo/transaction"
 	"enlabs-test/cache/user"
+	finance_manager "enlabs-test/finance-manager"
+	"enlabs-test/repo/transaction"
 	"github.com/valyala/fasthttp"
 	"strconv"
 )

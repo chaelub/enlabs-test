@@ -3,4 +3,4 @@
     cancellationTimeout = 1 # minutes between canceling last 10 transactions
 
 [postgres]
-    dsn = "host=127.0.0.1 port=5432 user=postgres password=liverpool dbname=test sslmode=disable"
+    dsn = "host=enlabs-test_db_1 port=5432 user=postgres password=liverpool dbname=test sslmode=disable"

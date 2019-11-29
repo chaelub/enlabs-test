@@ -1,10 +1,10 @@
 package main
 
 import (
-	"enlabs-test/app/cache/user"
-	finance_manager "enlabs-test/app/finance-manager"
-	"enlabs-test/app/repo/transaction"
-	user_repo "enlabs-test/app/repo/user"
+	"enlabs-test/cache/user"
+	finance_manager "enlabs-test/finance-manager"
+	"enlabs-test/repo/transaction"
+	user_repo "enlabs-test/repo/user"
 	"enlabs-test/server/router"
 	"enlabs-test/store/pg"
 	"flag"
@@ -30,12 +30,6 @@ func init() {
 }
 
 func main() {
-	if err := run(); err != nil {
-		panic(err)
-	}
-}
-
-func run() error {
 	/*
 		read config
 		connect to DB
@@ -51,27 +45,27 @@ func run() error {
 	conf := new(Config)
 	_, err := toml.DecodeFile(*configPath, conf)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	pgStore, err := pg.InitPGStore(*conf.PGConfig)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	ur, err := user_repo.NewUserRepo(pgStore)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	userCache, err := user.Cache(ur)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	transactionRepo, err := transaction.NewTransactionRepo(pgStore)
 	if err != nil {
-		return nil
+		panic(err)
 	}
 
 	financeManager := finance_manager.NewFinanceManager(userCache, transactionRepo)
@@ -85,8 +79,6 @@ func run() error {
 	}
 
 	if err := server.ListenAndServe(":" + conf.ServiceConfig.HttpInterface); err != nil {
-		return err
+		panic(err)
 	}
-
-	return nil
 }

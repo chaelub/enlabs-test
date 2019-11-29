@@ -1,18 +1,21 @@
 package router
 
 import (
-	finance_manager "enlabs-test/app/finance-manager"
-	"enlabs-test/cache/user"
+	cache "enlabs-test/cache/user"
+	finance_manager "enlabs-test/finance-manager"
 	"enlabs-test/server/handlers/private/user/account"
 	"github.com/buaazp/fasthttprouter"
 	"github.com/valyala/fasthttp"
 )
 
-func Router(userCache user.UserCacheI, financeManager finance_manager.FinanceManagerI) *fasthttprouter.Router {
+func Router(userCache cache.UserCacheI, financeManager finance_manager.FinanceManagerI) *fasthttprouter.Router {
 	r := fasthttprouter.New()
 
 	ua := account.UserAccountService(userCache, financeManager)
 	r.POST("/user/:userid/account", authMW(ua.UpdateAccount))
+	r.GET("/health", func(ctx *fasthttp.RequestCtx) {
+		ctx.Write([]byte("ok: I'm alive!"))
+	})
 
 	return r
 }

@@ -1,9 +1,9 @@
 package finance_manager
 
 import (
-	"enlabs-test/app/repo/transaction"
-	"enlabs-test/app/repo/user"
 	cache "enlabs-test/cache/user"
+	"enlabs-test/repo/transaction"
+	"enlabs-test/repo/user"
 	"time"
 )
 
