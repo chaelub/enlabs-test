@@ -1,3 +1,6 @@
+prepare-volume:
+	mkdir pgvolume
+
 run-compose:
 	$(info starting services. http interface available on 8001 port)
 	@docker-compose up --build -d
