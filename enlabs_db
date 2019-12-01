@@ -176,6 +176,11 @@ ALTER TABLE ONLY public.users
 ALTER TABLE ONLY public.transactions
     ADD CONSTRAINT transactions_userid_fkey FOREIGN KEY (userid) REFERENCES public.users(id);
 
+--
+-- Insert test user
+--
+
+INSERT INTO public.users(account) VALUES(10.0);
 
 --
 -- PostgreSQL database dump complete

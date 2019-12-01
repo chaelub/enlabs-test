@@ -6,12 +6,13 @@ import (
 	"enlabs-test/server/handlers/private/user/account"
 	"github.com/buaazp/fasthttprouter"
 	"github.com/valyala/fasthttp"
+	"log"
 )
 
-func Router(userCache cache.UserCacheI, financeManager finance_manager.FinanceManagerI) *fasthttprouter.Router {
+func Router(log *log.Logger, userCache cache.UserCacheI, financeManager finance_manager.FinanceManagerI) *fasthttprouter.Router {
 	r := fasthttprouter.New()
 
-	ua := account.UserAccountService(userCache, financeManager)
+	ua := account.UserAccountService(log, userCache, financeManager)
 	r.POST("/user/:userid/account", authMW(ua.UpdateAccount))
 	r.GET("/health", func(ctx *fasthttp.RequestCtx) {
 		ctx.Write([]byte("ok: I'm alive!"))

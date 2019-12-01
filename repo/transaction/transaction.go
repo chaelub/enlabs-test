@@ -10,6 +10,7 @@ import (
 var TransactionStates = [2]string{"lose", "win"}
 
 type TransactionStatus uint8
+type TransactionState uint8
 
 const (
 	TxUnknown TransactionStatus = iota
@@ -18,20 +19,65 @@ const (
 	TXCanceled
 )
 
+const (
+	TxStateUnknown TransactionState = iota
+	TxStateLose
+	TxStateWin
+)
+
 type TransactionRepoI interface {
 	LastNSuccessful(n int) ([]int64, error)
+	TransactionByExtId(string) (*Transaction, error)
+	CheckExistsByExtId(string) (bool, error)
+	Insert(*Transaction) error
+	Update(*Transaction) error
 }
 
 // for future needs
 type Transaction struct {
-	Id     int64           `json:"id"`
-	ExtId  string          `json:"transactionId"`
-	State  string          `json:"state"`
-	Amount decimal.Decimal `json:"amount"`
+	Id     int64
+	ExtId  string
+	UserId int64
+	State  TransactionState
+	Amount decimal.Decimal
+	Tms    int64
+	Status TransactionStatus
 }
 
 type TransactionRepo struct {
 	store *sql.DB
+}
+
+func (t *TransactionRepo) TransactionByExtId(extId string) (*Transaction, error) {
+	row := pg.PGStore.QueryRow(fmt.Sprintf(transactionByExtId, extId))
+	transaction := new(Transaction)
+	err := row.Scan(
+		&transaction.Id,
+		&transaction.ExtId,
+		&transaction.Amount,
+		&transaction.State,
+		&transaction.Status,
+		&transaction.UserId,
+		&transaction.Tms,
+	)
+
+	return transaction, err
+}
+
+func (t *TransactionRepo) CheckExistsByExtId(extId string) (bool, error) {
+	row := pg.PGStore.QueryRow(fmt.Sprintf(checkExistsByExtId, extId))
+	count := 0
+	err := row.Scan(&count)
+
+	return count > 0, err
+}
+
+func (t *TransactionRepo) Insert(transaction *Transaction) error {
+	return nil
+}
+
+func (t *TransactionRepo) Update(transaction *Transaction) error {
+	return nil
 }
 
 func (t *TransactionRepo) LastNSuccessful(n int) ([]int64, error) {

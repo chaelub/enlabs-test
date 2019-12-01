@@ -1,6 +1,10 @@
 package user
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"github.com/shopspring/decimal"
+)
 
 type UserRepoI interface {
 	User(int64) (*User, error)
@@ -11,12 +15,18 @@ type UserRepo struct {
 }
 
 type User struct {
-	Id int64
+	Id      int64           `json:"id"`
+	Account decimal.Decimal `json:"account"`
 }
 
 func (ur *UserRepo) User(id int64) (*User, error) {
-	// todo get user from store
-	return nil, nil
+	row := ur.store.QueryRow(fmt.Sprintf(userById, id))
+	u := new(User)
+	account := 0.0
+	err := row.Scan(&u.Id, &account)
+	u.Account = decimal.NewFromFloat(account)
+
+	return u, err
 }
 
 func NewUserRepo(store *sql.DB) (UserRepoI, error) {

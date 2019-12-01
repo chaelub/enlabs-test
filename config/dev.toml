@@ -1,5 +1,8 @@
 [service]
     http = "8001"
+
+[finance-manager]
+    num2Cancel = 10
     cancellationTimeout = 1 # minutes between canceling last 10 transactions
 
 [postgres]
