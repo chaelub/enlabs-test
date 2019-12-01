@@ -14,6 +14,7 @@ type UserRepo struct {
 	store *sql.DB
 }
 
+// todo: don't store money on user model, add account model
 type User struct {
 	Id      int64           `json:"id"`
 	Account decimal.Decimal `json:"account"`
