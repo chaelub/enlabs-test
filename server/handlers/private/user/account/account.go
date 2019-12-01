@@ -63,14 +63,14 @@ func (s *UserAccount) UpdateAccount(ctx *fasthttp.RequestCtx) {
 
 	uId, ok := ctx.UserValue("userid").(string)
 	if !ok {
-		log.Printf("error: can't cast userId [%+v] to string\n", ctx.UserValue("userid"))
+		s.log.Printf("error: can't cast userId [%+v] to string\n", ctx.UserValue("userid"))
 		ctx.SetStatusCode(http.StatusBadRequest)
 		updAccResp.Error = "bad request"
 		return
 	}
 	userId, err := strconv.Atoi(uId)
 	if err != nil {
-		log.Printf("error: can't convert userId [%s] to int\n", uId)
+		s.log.Printf("error: can't convert userId [%s] to int\n", uId)
 		updAccResp.Error = err.Error()
 		ctx.SetStatusCode(http.StatusBadRequest)
 		return
@@ -78,7 +78,7 @@ func (s *UserAccount) UpdateAccount(ctx *fasthttp.RequestCtx) {
 	user, err := s.userCache.User(int64(userId))
 	if err != nil {
 		// todo handle error
-		log.Printf("error: can't get user [%d] from cache: %+v\n", userId, err)
+		s.log.Printf("error: can't get user [%d] from cache: %+v\n", userId, err)
 		updAccResp.Error = err.Error()
 		ctx.SetStatusCode(http.StatusBadRequest)
 		return
@@ -88,7 +88,7 @@ func (s *UserAccount) UpdateAccount(ctx *fasthttp.RequestCtx) {
 	b := ctx.PostBody()
 	tr := new(UpdateAccountReq)
 	if err = json.Unmarshal(b, tr); err != nil {
-		log.Printf("error: can't parse request body: %+v\n", err)
+		s.log.Printf("error: can't parse request body: %+v\n", err)
 		updAccResp.Error = err.Error()
 		ctx.SetStatusCode(http.StatusBadRequest)
 		return
@@ -111,7 +111,7 @@ func (s *UserAccount) UpdateAccount(ctx *fasthttp.RequestCtx) {
 
 	if user, err = s.financeManager.ProcessTransaction(user, transaction); err != nil {
 		// todo handle error
-		log.Printf("error: transaction[%s] processing error: %+v\n", transaction.ExtId, err)
+		s.log.Printf("error: transaction[%s] processing error: %+v\n", transaction.ExtId, err)
 		ctx.SetStatusCode(http.StatusInternalServerError)
 		updAccResp.Error = err.Error()
 		return
