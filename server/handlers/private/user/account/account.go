@@ -47,6 +47,7 @@ func (s *UserAccount) UpdateAccount(ctx *fasthttp.RequestCtx) {
 		validate request
 		get user from cache
 		pass user and transaction to finance worker
+		todo: get request type from Source-Type header -> save with transaction record;
 	*/
 
 	updAccResp := new(UpdateAccountResp)
