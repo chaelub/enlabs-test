@@ -3,7 +3,10 @@ Enlabs test task solution
 
 ## build
 ``` bash
-$ docker-compose up --build
+# first time 
+$ make prepare-volume
+# after that
+$ make run-compose
 
 # service available on localhost:8001
 # in order to change it, please fix ./config/dev.toml
